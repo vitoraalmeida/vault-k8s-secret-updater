@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-readenv
+spec:
+  selector:
+    matchLabels:
+      app: python-readenv
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: python-readenv 
+    spec:
+      containers:
+      - name: python-readenv
+        image: python-readenv
+        imagePullPolicy: Never
+        env:
+          - name : SECRET
+            valueFrom:
+              secretKeyRef:
+                name: python-readenv
+                key: secret
+      - name: secretsupdater
+        image: secretsupdater
+        imagePullPolicy: Never
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: python-readenv 
+type: Opaque
+data:
+  secret: bXlzZWNyZXRwYXNzd29yZA==
+---
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: secrets-manager
+rules:
+- apiGroups: [""]
+  resources: ["secrets", "pods"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: secrets-manager
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: vault
+roleRef:
+  kind: ClusterRole
+  name: secrets-manager
+  apiGroup: rbac.authorization.k8s.io

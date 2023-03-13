@@ -1,0 +1,9 @@
+from python:latest
+
+WORKDIR app
+
+COPY readenv.py .
+
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "./readenv.py"]
