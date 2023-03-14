@@ -22,9 +22,50 @@ spec:
               secretKeyRef:
                 name: python-readenv
                 key: secret
+          - name : ENV1
+            valueFrom:
+              secretKeyRef:
+                name: python-readenv
+                key: env1
+          - name : ENV2
+            valueFrom:
+              secretKeyRef:
+                name: python-readenv
+                key: env2
       - name: secretsupdater
         image: secretsupdater
         imagePullPolicy: Never
+        env:
+          - name : VAULT_ADDR
+            valueFrom:
+              secretKeyRef:
+                name: secrets-updater
+                key: vault_addr
+          - name : VAULT_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: secrets-updater
+                key: vault_token
+          - name : VAULT_SECRET_PATH
+            valueFrom:
+              secretKeyRef:
+                name: secrets-updater
+                key: vault_secret_path
+          - name : VAULT_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: secrets-updater
+                key: vault_secret_key
+          - name : APP_NAME
+            valueFrom:
+              secretKeyRef:
+                name: secrets-updater
+                key: app_name
+          - name : NAMESPACE
+            valueFrom:
+              secretKeyRef:
+                name: secrets-updater
+                key: namespace
 ---
 apiVersion: v1
 kind: Secret
@@ -33,8 +74,24 @@ metadata:
 type: Opaque
 data:
   secret: bXlzZWNyZXRwYXNzd29yZA==
----
+  env1: dGVzdGUK
+  env2: ***REMOVED***
 
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secrets-updater 
+type: Opaque
+data:
+  vault_addr: aHR0cDovLzEwLjI0NC4xLjIK
+  vault_token: cm9vdAo=
+  vault_secret_path: cG9jCg==
+  vault_secret_key: cGFzcwo=
+  namespace: dmF1bHQK
+  app_name: cHl0aG9uLXJlYWRlbnYK
+
+---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
