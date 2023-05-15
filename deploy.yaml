@@ -75,7 +75,7 @@ type: Opaque
 data:
   secret: bXlzZWNyZXRwYXNzd29yZA==
   env1: dGVzdGUK
-  env2: ***REMOVED***
+  env2: secretenv2 
 
 ---
 apiVersion: v1
